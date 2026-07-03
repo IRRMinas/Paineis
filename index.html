@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painéis · SEPLAN / IRR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A44;
+    --ink-soft:#3A4A68;
+    --paper:#F1ECDD;
+    --paper-card:#FBF8EF;
+    --paper-dark:#E4DCC2;
+    --stamp-red:#A63325;
+    --verde:#2F6B4F;
+    --line:#C9BFA0;
+    --shadow: 0 1px 0 rgba(27,42,68,0.05), 0 8px 20px -12px rgba(27,42,68,0.25);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--paper) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper) 1px, transparent 1px);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  a{color:inherit;}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 80px;}
+
+  /* HEADER */
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:52px 24px 64px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:6px solid var(--stamp-red);
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image: repeating-linear-gradient(135deg, rgba(241,236,221,0.035) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  .header-inner{
+    max-width:920px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:32px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:#C9D3C9;
+    margin:0 0 14px;
+  }
+  h1{
+    font-family:'Lora', serif;
+    font-weight:600;
+    font-size:clamp(28px, 4vw, 40px);
+    line-height:1.15;
+    margin:0 0 12px;
+    max-width:520px;
+  }
+  header p.sub{
+    margin:0;
+    color:#D7DCE6;
+    font-size:15px;
+    max-width:460px;
+    line-height:1.5;
+  }
+
+  .stamp{
+    flex:0 0 auto;
+    width:96px;height:96px;
+    border:2px dashed rgba(241,236,221,0.55);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(-9deg);
+    font-family:'IBM Plex Mono', monospace;
+    text-align:center;
+    color:#EADFC2;
+  }
+  .stamp .stamp-inner{
+    border:1px solid rgba(241,236,221,0.55);
+    border-radius:50%;
+    width:78px;height:78px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+  }
+  .stamp .stamp-code{font-size:9px; letter-spacing:.12em;}
+  .stamp .stamp-main{font-size:15px; font-weight:600; letter-spacing:.04em;}
+
+  /* SEARCH */
+  .toolbar{
+    margin:-28px auto 0;
+    max-width:920px;
+    padding:0 24px;
+    position:relative;
+    z-index:2;
+  }
+  .search-box{
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    border-radius:10px;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .search-box svg{flex:0 0 auto; opacity:.55;}
+  .search-box input{
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    width:100%;
+  }
+  .search-box input::placeholder{color:#8A8368;}
+  .count-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  /* GRID */
+  .grid{
+    margin-top:34px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  @media (max-width: 680px){
+    .grid{grid-template-columns:1fr;}
+    header{padding:40px 20px 56px;}
+    .header-inner{flex-direction:column; align-items:flex-start;}
+    .stamp{transform:rotate(-6deg) scale(.85); margin-top:6px;}
+  }
+
+  .card{
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:24px 22px 20px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 2px 0 rgba(27,42,68,0.06), 0 16px 28px -14px rgba(27,42,68,0.32);
+  }
+  .card.hidden{display:none;}
+
+  .badge{
+    position:absolute;
+    top:-14px; left:20px;
+    width:40px; height:40px;
+    border-radius:50%;
+    background:var(--ink);
+    color:var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:14px;
+    border:2px solid var(--paper-card);
+    transform:rotate(-4deg);
+    box-shadow:0 3px 6px rgba(27,42,68,.25);
+  }
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-top:6px;
+  }
+  .icon-wrap{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:var(--paper-dark);
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+    color:var(--ink);
+  }
+  .source-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:4px 8px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .source-tag.tableau{color:var(--verde); border-color:var(--verde);}
+
+  .card h2{
+    font-family:'Lora', serif;
+    font-weight:600;
+    font-size:19px;
+    margin:2px 0 0;
+    line-height:1.3;
+  }
+  .card p{
+    margin:0;
+    font-size:13.5px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    flex:1;
+  }
+
+  .open-btn{
+    margin-top:6px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    align-self:flex-start;
+    background:var(--verde);
+    color:#F4F1E6;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:7px;
+    transition:background .15s ease;
+  }
+  .open-btn:hover{background:#255A41;}
+  .open-btn svg{width:13px;height:13px;}
+
+  .empty-state{
+    display:none;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  .empty-state.show{display:block;}
+
+  footer{
+    max-width:920px;
+    margin:56px auto 0;
+    padding:20px 24px 0;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <p class="eyebrow">SEPLAN · IRR / Fiocruz Minas</p>
+      <h1>Painéis Orçamentários<br>e Financeiros</h1>
+      <p class="sub">Um único endereço para todos os painéis do setor. Sempre que um novo for publicado, ele entra aqui.</p>
+    </div>
+    <div class="stamp" aria-hidden="true">
+      <div class="stamp-inner">
+        <span class="stamp-code">SEPLAN</span>
+        <span class="stamp-main">IRR</span>
+        <span class="stamp-code">2026</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="search-box">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search" type="text" placeholder="Buscar painel por nome ou descrição...">
+    <span class="count-tag" id="count-tag">4 painéis</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid" id="grid">
+
+    <article class="card" data-search="consulta diária de saldos liquidações empenhos alertas saldo residual">
+      <span class="badge">01</span>
+      <div class="card-top">
+        <div class="icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2-3 .6-3 2 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg>
+        </div>
+        <span class="source-tag">GitHub Pages</span>
+      </div>
+      <h2>Consulta Diária de Saldos</h2>
+      <p>Liquidações do dia, empenhos do dia, alerta de saldos novos, saldos residuais de 30 dias e saldos atuais.</p>
+      <a class="open-btn" href="https://irrminas.github.io/Saldos-Diarios/" target="_blank" rel="noopener">
+        Abrir painel
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </article>
+
+    <article class="card" data-search="estudo cogeplan material de consumo dias a liquidar">
+      <span class="badge">02</span>
+      <div class="card-top">
+        <div class="icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+        </div>
+        <span class="source-tag">GitHub Pages</span>
+      </div>
+      <h2>Estudo Cogeplan</h2>
+      <p>Estudo do material de consumo e estudo dos dias a liquidar.</p>
+      <a class="open-btn" href="https://irrminas.github.io/Estudo-Cogeplan/" target="_blank" rel="noopener">
+        Abrir painel
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </article>
+
+    <article class="card" data-search="orçamento 2026 previsão orçamentária setor">
+      <span class="badge">03</span>
+      <div class="card-top">
+        <div class="icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>
+        </div>
+        <span class="source-tag">GitHub Pages</span>
+      </div>
+      <h2>Orçamento 2026</h2>
+      <p>Previsão orçamentária de cada setor.</p>
+      <a class="open-btn" href="https://irrminas.github.io/Orcamentos-2026/" target="_blank" rel="noopener">
+        Abrir painel
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </article>
+
+    <article class="card" data-search="tableau painel fiocruz minas transparente orçamento 2026">
+      <span class="badge">04</span>
+      <div class="card-top">
+        <div class="icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        </div>
+        <span class="source-tag tableau">Tableau Public</span>
+      </div>
+      <h2>Painel Fiocruz Minas Transparente</h2>
+      <p>Orçamento 2026 · SEPLAN, publicado no Tableau Public.</p>
+      <a class="open-btn" href="https://public.tableau.com/app/profile/seplan4061/viz/PainelFiocruzMinasTransparente-Oramento2026-SEPLAN-IRR/Home" target="_blank" rel="noopener">
+        Abrir painel
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </article>
+
+  </div>
+
+  <p class="empty-state" id="empty-state">Nenhum painel encontrado para essa busca.</p>
+
+  <footer>
+    <span>4 painéis catalogados</span>
+    <span>Atualize este arquivo para adicionar novos</span>
+  </footer>
+</div>
+
+<script>
+  const input = document.getElementById('search');
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const countTag = document.getElementById('count-tag');
+  const emptyState = document.getElementById('empty-state');
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let visible = 0;
+    cards.forEach(card => {
+      const match = card.dataset.search.includes(q) || card.querySelector('h2').textContent.toLowerCase().includes(q);
+      card.classList.toggle('hidden', !match);
+      if(match) visible++;
+    });
+    countTag.textContent = visible + (visible === 1 ? ' painel' : ' painéis');
+    emptyState.classList.toggle('show', visible === 0);
+  });
+</script>
+
+</body>
+</html>
